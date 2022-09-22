@@ -10,6 +10,34 @@ def index():
 def about():
     return render_template('about.html')
 
+@app.route('/shuby')
+def shuby():
+    return render_template('shuby.html')
+
+@app.route('/dublenki')
+def dublenki():
+    return render_template('dublenki.html')
+
+@app.route('/contacts')
+def contacts():
+    return render_template('contacts.html')
+
+@app.route('/dostavka')
+def dostavka():
+    return render_template('dostavka.html')
+
+@app.route('/basket')
+def basket():
+    return render_template('basket.html')
+
+@app.route('/opt')
+def opt():
+    return render_template('opt.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 
 if __name__=='__main__':
     app.run(debug=True)
