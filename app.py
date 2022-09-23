@@ -7,9 +7,11 @@ db = SQLAlchemy
 
 class Item(db.Model):
     id=db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(300), nullable=False)
-    price = db.Column(db.Integer)
+    title = db.Column(db.String(200), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    photo = db.Column(db.LargeBinary,)
+    isActive = db.Column(db.Boolean, default=True)
 
 
 @app.route('/')
