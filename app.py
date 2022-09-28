@@ -14,10 +14,14 @@ class Item(db.Model):
     photo = db.Column(db.LargeBinary, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
 
+    def __repr__(self):
+        return self.title
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    items=Item.query.all()
+    return render_template('index.html', items=items)
 
 @app.route('/about')
 def about():
