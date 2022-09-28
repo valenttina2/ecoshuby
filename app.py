@@ -1,10 +1,16 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
+import base64
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///shop.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 db = SQLAlchemy(app)
+UPLOAD_FOLDER = 'static/images'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 class Item(db.Model):
     id=db.Column(db.Integer, primary_key=True)
@@ -21,7 +27,8 @@ class Item(db.Model):
 @app.route('/')
 def index():
     items=Item.query.all()
-    return render_template('index.html', items=items)
+    photos = os.listdir(app.config['UPLOAD_FOLDER'])
+    return render_template('index.html', items=items, photos=photos)
 
 @app.route('/about')
 def about():
@@ -29,12 +36,22 @@ def about():
 
 @app.route('/create', methods =['POST','GET'])
 def create():
+    def upload_photo():
+        uploaded_photo = request.files['photo']
+        if uploaded_photo.filename != '':
+            uploaded_photo.save(uploaded_photo.filename)
+
     if request.method=='POST':
         title = request.form['title']
         price = request.form['price']
         description = request.form['description']
-        photo = request.files['photo'].read()
+        #photo = request.files['photo']   #.read()
 
+        photo = request.files['photo']
+        if photo(photo.filename):
+            img_name = secure_filename(photo.filename)
+            img_read = photo.read()
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], img_name))
 
         item=Item(title=title, price=price, description=description, photo=photo)
 
