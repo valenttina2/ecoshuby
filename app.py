@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from base64 import b64encode
 
+from cloudipsp import Api, Checkout
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'C2HWGVoMGfNTBsrYQg8EcMrdTimkZfAb'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///shop.db'
@@ -30,6 +32,20 @@ def index():
     items=Item.query.all()
     return render_template('index.html', items=items)
 
+@app.route('/buy/<int:id>')
+def item_buy(id):
+    item = Item.query.get(id)
+
+    api = Api(merchant_id=1396424,
+              secret_key='test')
+    checkout = Checkout(api=api)
+    data = {
+        "currency": "RUB",
+        "amount": str(item.price)+'00'
+    }
+    url = checkout.url(data).get('checkout_url')
+    return redirect(url)
+
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -44,7 +60,6 @@ def create():
         print(photo, "PHTOo")
 
         item=Item(title=title, price=price, description=description, photo=photo)
-
 
         db.session.add(item)
         db.session.commit()
